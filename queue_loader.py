@@ -7,8 +7,6 @@ import pdb
 import glob
 import cPickle
 
-from tqdm import tqdm
-
 import numpy as np
 import tensorflow as tf
 

@@ -15,7 +15,6 @@ Good luck!
 - Python 2.7+
 - [NumPy](http://www.numpy.org/)
 - [Tensorflow r1.0+](https://www.tensorflow.org/install/)
-- [tqdm](https://pypi.python.org/pypi/tqdm)
 
 ## Data
 - [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html)
@@ -39,6 +38,7 @@ Train a very simple CNN from scratch with default settings:
 python main.py --train
 ```
 First time training will dump a `train_package.tfrecords` file in `data_log/` folder.
+
 Check out tunable arguments:
 ```bash
 python main.py
