@@ -35,17 +35,17 @@ mkdir data_log
 
 ## Train
 Train a very simple CNN from scratch with default settings:
-```python
+```bash
 python main.py --train
 ```
 First time training will dump a `train_package.tfrecords` file in `data_log/` folder.
 Check out tunable arguments:
-```python
+```bash
 python main.py
 ```
 
 ## Test
-```python
+```bash
 python main.py --test
 ```
 First time testing will dump a `test_package.tfrecords` file in `data_log/` folder.
