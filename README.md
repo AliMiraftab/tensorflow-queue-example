@@ -57,15 +57,15 @@ The result will be something like this:
 ...
 epoch:  3, step: 90, loss: 2.8682
 epoch:  3, step: 97, loss: 2.8901, epoch  3 done.
-W tensorflow/core/framework/op_kernel.cc:993] Out of range: FIFOQueue '_0_input_producer' is closed and has insufficient elements (requested 1, current size 0)
-         [[Node: ReaderReadV2 = ReaderReadV2[_device="/job:localhost/replica:0/task:0/cpu:0"](TFRecordReaderV2, input_producer)]]
+W tensorflow/core/framework/op_kernel.cc:1152] Out of range: RandomShuffleQueue '_2_shuffle_batch/random_shuffle_queue' is closed and has insufficient elements (requested XXX, current size XXX)
+        [[Node: shuffle_batch = QueueDequeueManyV2[component_types=[DT_FLOAT, DT_INT32], timeout_ms=-1, _device="/job:localhost/replica:0/task:0/cpu:0"](shuffle_batch/random_shuffle_queue, shuffle_batch/n)]]
 ...
 ...
-         [[Node: shuffle_batch = QueueDequeueManyV2[component_types=[DT_FLOAT, DT_INT32], timeout_ms=-1, _device="/job:localhost/replica:0/task:0/cpu:0"](shuffle_batch/random_shuffle_queue, shuffle_batch/n)]]
+        [[Node: shuffle_batch = QueueDequeueManyV2[component_types=[DT_FLOAT, DT_INT32], timeout_ms=-1, _device="/job:localhost/replica:0/task:0/cpu:0"](shuffle_batch/random_shuffle_queue, shuffle_batch/n)]]
 
 Done training, epoch limit: 3 reached.
 ```
-This is normal because when epoch 3 is done, coordinator will send a request_stop signal to the queue.
+These warning messages cannot be caught which is similar to [this issue](https://github.com/tensorflow/tensorflow/issues/8330) but it's totally fine, the error is caught and handled later on.
 
 ## Resources
 - [Tensorflow Official Document for Reading Data](https://www.tensorflow.org/programmers_guide/reading_data)
