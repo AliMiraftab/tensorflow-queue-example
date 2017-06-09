@@ -10,10 +10,10 @@ import cPickle
 import numpy as np
 import tensorflow as tf
 
-def readFromTFRecords(file_name, batch_size, num_epochs, img_shape, num_threads=2, min_after_dequeue=1000):
+def readFromTFRecords(filename, batch_size, num_epochs, img_shape, num_threads=2, min_after_dequeue=1000):
     """
     Args:
-        file_name: the .tfrecords file we are going to load
+        filename: the .tfrecords file we are going to load
         batch_size: batch size
         num_epoch: number of epochs, 0 means train forever
         img_shape: image shape: [height, width, channels]
@@ -26,10 +26,10 @@ def readFromTFRecords(file_name, batch_size, num_epochs, img_shape, num_threads=
         images: (batch_size, height, width, channels)
         labels: (batch_size)
     """
-    def read_and_decode(file_name_queue, img_shape):
+    def read_and_decode(filename_queue, img_shape):
         """Return a single example for queue"""
         reader = tf.TFRecordReader()
-        _, serialized_example = reader.read(file_name_queue)
+        _, serialized_example = reader.read(filename_queue)
         features = tf.parse_single_example(
                 serialized_example,
                 features={
@@ -47,9 +47,9 @@ def readFromTFRecords(file_name, batch_size, num_epochs, img_shape, num_threads=
 
         return image, sparse_label
 
-    file_name_queue = tf.train.string_input_producer([file_name], num_epochs=num_epochs)
+    filename_queue = tf.train.string_input_producer([filename], num_epochs=num_epochs)
 
-    image, sparse_label = read_and_decode(file_name_queue, img_shape) # share file_name_queue with multiple threads
+    image, sparse_label = read_and_decode(filename_queue, img_shape) # share filename_queue with multiple threads
 
     # tf.train.shuffle_batch internally uses a RandomShuffleQueue
     images, sparse_labels = tf.train.shuffle_batch(
@@ -60,13 +60,13 @@ def readFromTFRecords(file_name, batch_size, num_epochs, img_shape, num_threads=
 
     return images, sparse_labels    
 
-def convertToTFRecords(images, labels, num_examples, file_name):
+def convertToTFRecords(images, labels, num_examples, filename):
     """
     Args:
         images: (num_examples, height, width, channels) np.int64 nparray (0~255)
         labels: (num_examples) np.int64 nparray
         num_examples: number of examples
-        file_name: the tfrecords' name to be saved
+        filename: the tfrecords' name to be saved
 
     Return: None, but store a .tfrecords file to data_log/
     """
@@ -74,7 +74,7 @@ def convertToTFRecords(images, labels, num_examples, file_name):
     cols = images.shape[2]
     depth = images.shape[3]
 
-    writer = tf.python_io.TFRecordWriter(os.path.join('data_log', file_name))
+    writer = tf.python_io.TFRecordWriter(os.path.join('data_log', filename))
     for index in xrange(num_examples):
         image_raw = images[index].tostring()
         example = tf.train.Example(features=tf.train.Features(feature={
@@ -121,15 +121,15 @@ class Queue_loader():
     # This queue loader use cifar10 as example data
     def __init__(self, batch_size, num_epochs, num_threads=2, min_after_dequeue=1000, train=True):
         if train:
-            file_name = 'train_package.tfrecords'
+            filename = 'train_package.tfrecords'
         else:
-            file_name = 'test_package.tfrecords'
+            filename = 'test_package.tfrecords'
 
         # First, we are going to generate a single file which contains both training images and labels 
         #  in standard tensorflow file format (TFRecords), this is simple
-        if not os.path.exists(os.path.join('data_log', file_name)):
+        if not os.path.exists(os.path.join('data_log', filename)):
             images, labels = read_data_batches(train)
-            convertToTFRecords(images, labels, len(images), file_name)
+            convertToTFRecords(images, labels, len(images), filename)
 
         img_shape = [32, 32, 3]
         self.num_examples = 50000 if train else 10000
@@ -137,7 +137,7 @@ class Queue_loader():
         self.num_batches = int(self.num_examples / batch_size)
         
         # Second, we are going to read from .tfrecords file, this contains several steps
-        self.images, self.labels = readFromTFRecords(os.path.join('data_log', file_name), batch_size, num_epochs,
+        self.images, self.labels = readFromTFRecords(os.path.join('data_log', filename), batch_size, num_epochs,
                 img_shape, num_threads, min_after_dequeue)
 
         # done
