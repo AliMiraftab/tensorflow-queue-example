@@ -1,4 +1,6 @@
-# Tensorflow Queue Example
+# Tensorflow Queue Example (no longer maintainted)
+*This repo is no longer maintained. If you are interested in playing with high-level tensorflow APIs, please check out [this Gist](https://gist.github.com/markdtw/ef1ec76e6be9104316c454455754af04), it's pretty much a cleaner version of tensorflow official tutorial with queue loader as well, should be easy to follow.*
+
 An organized and simple example for loading data in queues using Tensorflow, with CIFAR-10 as simulated input data, compatible with tensorflow >= r1.0.
 
 Provide `cnn.py` and `alexnet.py` as naive CNN architecture for training/testing with queues.
